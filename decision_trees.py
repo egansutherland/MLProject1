@@ -5,9 +5,13 @@ import math
 #references to its left and right children and decision information
 class Node:
 	def __init__(self, depth):
+		#left child (aka no side,  aka 0 side)
 		self.left = None
+		#right child (aka no side,  aka 1 side)
 		self.right = None
+		#the question it asks (which is just an index)
 		self.feat = None
+		#the decision
 		self.label = None
 		self.depth = depth
 
@@ -137,15 +141,49 @@ def DT_train_real_best(X_train,Y_train,X_val,Y_val):
 
 #returns index of the max IG, none if all zeros NEED THIS IMPLEMENTED
 def best_IG(X,Y):
-	return 0 #DEBUGGING
-	H = 0 # math.log(a,base)
+	#return 0 #DEBUGGING
+	zeros = 0
+	ones = 0
+	for y in Y:
+		if y[0] == 0:
+			zeros += 1
+		else:
+			ones += 1
+	total = zeros + ones
+	if zeros == 0 or ones == 0:
+		return None
+	H = -(zeros/total) * math.log((zeros/total),2) -(ones/total) * math.log((ones/total),2)
+	print('H()',H)
 	maxIG = 0
 	index = None
-	for i,x in enumerate(X):
-		H_left = 0
-		H_right = 0
-		IG = 0 #H - amountLeft/total*H_left - amountRight/total*H_right
-		if IG > maxIG:
-			maxIG = IG
-			index = i
+	for feat_idx in range(0,len(X)):
+		left_zeros = 0
+		left_ones = 0
+		right_zeros = 0
+		right_ones = 0
+		for sample_idx,x in enumerate(X):
+			if x[feat_idx]==0:
+				if Y[sample_idx][0] == 0:
+					left_zeros+=1
+				else:
+					left_ones+=1
+			else:
+				if Y[sample_idx][0] == 0:
+					right_zeros+=1
+				else:
+					right_ones+=1
+		left_total = left_zeros + left_ones
+		right_total = right_zeros + right_ones
+		H_left = -(left_zeros/left_total) * math.log((left_zeros/left_total),2) -(left_ones/left_total) * math.log((left_ones/left_total),2)
+		H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2) -(right_ones/right_total) * math.log((right_ones/right_total),2)
+		print('H(',feat_idx,'=0)=',H_left)
+		print('H(',feat_idx,'=1)=',H_right)
+
+	#for i,x in enumerate(X):
+	#	H_left = 0
+	#	H_right = 0
+	#	IG = 0 #H - amountLeft/total*H_left - amountRight/total*H_right
+	#	if IG > maxIG:
+	#		maxIG = IG
+	#		index = i
 	return index
