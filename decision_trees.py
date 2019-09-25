@@ -1,5 +1,19 @@
 import numpy as np
 
+#Decision Tree node
+#DT stores a DTnode as root. DTnode is the class that makes up the nodes in the decision tree. It stores
+#references to its left and right children and decision information
+class dtNode:
+	def __init__(self, key):
+		self.left = None
+		self.right = None
+		self.decision = key
+
+#Decision Tree class
+class dt:
+	def __init__(self, key):
+		self.root = dtNode(root, key)
+
 #function that takes training data as input. The labels and the features are binary, but the feature vectors can be of
 #any finite dimension. The training feature data (X) should be structured as a 2D numpy array, with each
 #row corresponding to a single sample. The training labels (Y) should be structured as a 2D numpy array,
