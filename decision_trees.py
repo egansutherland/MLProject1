@@ -156,7 +156,8 @@ def best_IG(X,Y):
 	print('H()',H)
 	maxIG = 0
 	index = None
-	for feat_idx in range(0,len(X)):
+	for feat_idx in range(0,len(X[0])):
+		print('INDEX',feat_idx)
 		left_zeros = 0
 		left_ones = 0
 		right_zeros = 0
@@ -174,16 +175,29 @@ def best_IG(X,Y):
 					right_ones+=1
 		left_total = left_zeros + left_ones
 		right_total = right_zeros + right_ones
-		H_left = -(left_zeros/left_total) * math.log((left_zeros/left_total),2) -(left_ones/left_total) * math.log((left_ones/left_total),2)
-		H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2) -(right_ones/right_total) * math.log((right_ones/right_total),2)
+		if left_total == 0 or right_total == 0:
+			continue
+		print('RT',right_total)
+		print('LT',left_total)
+		H_left = 0
+		H_right = 0
+		if left_zeros == 0:
+			H_left = -(left_ones/left_total) * math.log((left_ones/left_total),2)
+		elif left_ones == 0:
+			H_left = -(left_zeros/left_total) * math.log((left_zeros/left_total),2)
+		else:
+			H_left = -(left_zeros/left_total) * math.log((left_zeros/left_total),2) -(left_ones/left_total) * math.log((left_ones/left_total),2)
+		if right_zeros == 0:
+			H_right = -(right_ones/right_total) * math.log((right_ones/right_total),2)
+		elif right_ones == 0:
+			H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2)
+		else:
+			H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2) -(right_ones/right_total) * math.log((right_ones/right_total),2)
 		print('H(',feat_idx,'=0)=',H_left)
 		print('H(',feat_idx,'=1)=',H_right)
-
-	#for i,x in enumerate(X):
-	#	H_left = 0
-	#	H_right = 0
-	#	IG = 0 #H - amountLeft/total*H_left - amountRight/total*H_right
-	#	if IG > maxIG:
-	#		maxIG = IG
-	#		index = i
+		IG = H - (left_total/total)*H_left - (right_total/total)*H_right
+		print('IG',feat_idx,'=',IG)
+		if IG > maxIG:
+			maxIG = IG
+			index = feat_idx
 	return index
