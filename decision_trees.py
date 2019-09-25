@@ -115,7 +115,22 @@ def DT_test_binary(X,Y,DT):
 #Generate decision trees based on information gain on the training data, and return the tree that gives the
 #best accuracy on the validation data.
 def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
-	return dt
+	forrest = []
+	numFeats = len(X_train[0])
+	maxDT = None
+	maxAccuracy = 0
+	#build all depth dts
+	for i in range(0, numFeats):
+		temp = DTree()
+		forrest = forrest + [temp.build(X_train, Y_train, i)]
+	#use DT_test_binary to find accuracy of each dt on validation data
+	for i in range(0, numFeats):
+		tempAcc = DT_test_binary(X_val, Y_val, forrest[i])
+		if tempAcc > maxAccuracy:
+			maxAccuracy = tempAcc
+			maxDT = i
+	#return best dt
+	return forrest[maxDT]
 
 #This function should take a single sample and a trained decision tree and return a single classification.
 #The output should be a scalar value. You will use this function with the three trees to generate three
@@ -123,8 +138,6 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
 #on the test data presented below.
 def DT_make_prediction(x,DT):
 	return DT.predict(x)
-
-
 
 #These functions are defined similarly to those above except that the features are now real values. The labels
 #are still binary. Your decision tree will need to use questions with inequalities: >, ≥, <, ≤. THINK
