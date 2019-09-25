@@ -143,6 +143,22 @@ def DT_make_prediction(x,DT):
 #are still binary. Your decision tree will need to use questions with inequalities: >, ≥, <, ≤. THINK
 #ABOUT HOW THIS CAN BE DONE EFFICIENTLY.
 def DT_train_real(X,Y,max_depth):
+	#means = []
+	numFeats = len(X[0])
+	numSamples = len(X)
+	#find mean for each feature and assign binary values to smaples in X
+	for i in range(0, numFeats):
+		mean = 0
+		for j in range(0, numSamples):
+			mean = mean + X[j][i]
+		mean = mean / numSamples
+		#means = means + [mean]
+		#replace real values with binary values
+		for j in range(0, numSamples):
+			if X[j][i] < mean:
+				X[j][i] = 0
+			else:
+				X[j][i] = 1
 	return dt
 
 def DT_test_real(X,Y,DT):
