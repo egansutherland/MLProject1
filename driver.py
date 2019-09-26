@@ -31,10 +31,10 @@ DinnerX = np.array([[1, 1, 1, 0, 1, 1, 0], [0, 0, 1, 1, 0, 1, 1], [0, 1, 0, 0, 1
 DinnerY = np.array([[1], [1], [0], [1], [0], [1], [1], [0]])
 firstX = DinnerX[0:5:1]
 firstY = DinnerY[0:5:1]
-middleX = DinnerX[2:7:1] #SECOND MIDDLE
-middleY = DinnerY[2:7:1]
-lastX = DinnerX[3:8:1]
-lastY = DinnerY[3:8:1]
+middleX = DinnerX[1:6:1] #SECOND MIDDLE
+middleY = DinnerY[1:6:1]
+lastX = DinnerX[2:7:1]
+lastY = DinnerY[2:7:1]
 DinnerTestX = np.array([[0, 1, 1, 1, 0, 1, 0], [0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 1, 1, 0, 0]])
 DinnerTestY = np.array([[0], [1], [0]])
 
@@ -70,6 +70,7 @@ print('BEST2',best_acc_2)
 print()
 print()
 print('WRITE UP 2')
+print(middleX)
 max_depth_2 = 5
 DT_first = dt.DT_train_binary(firstX,firstY,max_depth_2)
 DT_middle = dt.DT_train_binary(middleX,middleY,max_depth_2)
