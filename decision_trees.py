@@ -15,15 +15,15 @@ class Node:
 		self.label = None
 		self.depth = depth
 
-	#traversing through the nodes, used for prediction and accuracy
-	def trav(self, x):
+	#searching through the nodes, used for prediction and accuracy
+	def search(self, x):
 		#base case is at a leaf node, there is no feature
 		if self.feat is None:
 			return self.label
 		elif x[self.feat] == 0:
-			return self.left.trav(x)
+			return self.left.search(x)
 		else:
-			return self.right.trav(x)
+			return self.right.search(x)
 
 	def split(self, X, Y, max_depth):
 		#assign node a label
@@ -40,6 +40,8 @@ class Node:
 		else:
 			self.label = 1
 		#pick feature to split on based on max IG
+		if self.depth == max_depth:
+			return
 		feat = best_IG(X,Y)
 		#check base cases: at max depth, no samples, out of features, or no IG  (prob don't need to check no samples or features... IG will take care of it)
 		if self.depth == max_depth or len(X) == 0 or self.depth == len(X[0]) or feat is None:
@@ -56,14 +58,12 @@ class Node:
 		right_Y = []
 		for i,x in enumerate(X):
 			if x[self.feat] == 0:
-				print('left') #DEBUGGING
 				#HAVING TROUBLE WITH THE ARRAYS :(
 				#left_X = np.append(left_X,x)
 				#left_Y = np.append(left_Y,Y[i])
 				left_X += [x]
 				left_Y += [Y[i]]
 			else:
-				print('right') #DEBUGGING
 				#right_X = np.append(right_X,x)
 				#right_Y = np.append(right_Y,Y[i])
 				right_X += [x]
@@ -79,16 +79,24 @@ class Node:
 		print('right_Y',right_Y)
 		self.left = Node(self.depth + 1)
 		self.right = Node(self.depth + 1)
+		print('LEFT')
 		self.left.split(left_X, left_Y, max_depth)
+		print('RIGHT')
 		self.right.split(right_X, right_Y, max_depth)
 
 	def toString(self):
-		print("Feat", self.feat, "Label", self.label, "Depth ", self.depth)
-		if self.left is not None:
-			self.left.toString()
-		if self.right is not None:
-			self.right.toString()
-
+		print('Depth',self.depth)
+		if self.feat is None:
+			print('Label',self.label)
+		else:
+			print('Feat',self.feat,'?')
+			if self.left is not None:
+				print('Left')
+				self.left.toString()
+			if self.right is not None:
+				print('Right')
+				self.right.toString()
+		print()
 
 #Decision Tree class
 class DTree:
@@ -96,8 +104,7 @@ class DTree:
 		self.root = Node(0)
 		self.means = None
 	def predict(self, x):
-		value = self.root.trav(x)
-		return value
+		return self.root.search(x)
 	def build(self, X, Y, max_depth):
 		self.root.split(X, Y, max_depth)
 	def toString(self):
