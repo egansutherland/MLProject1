@@ -33,8 +33,8 @@ firstX = DinnerX[0:5:1]
 firstY = DinnerY[0:5:1]
 middleX = DinnerX[1:6:1] #SECOND MIDDLE
 middleY = DinnerY[1:6:1]
-lastX = DinnerX[2:7:1]
-lastY = DinnerY[2:7:1]
+lastX = DinnerX[3:8:1]
+lastY = DinnerY[3:8:1]
 DinnerTestX = np.array([[0, 1, 1, 1, 0, 1, 0], [0, 1, 1, 1, 0, 0, 1], [1, 0, 0, 1, 1, 0, 0]])
 DinnerTestY = np.array([[0], [1], [0]])
 
