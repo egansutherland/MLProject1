@@ -1,8 +1,12 @@
 import numpy as np
+#for log
 import math
+#for making a shallow copy of the samples
+import copy
+
 #Decision Tree node
 #DTree stores a Node as root. Node is the class that makes up the nodes in the decision tree. It stores
-#references to its left and right children and decision information
+#references to its left and right children, depth, feature question information, and label decision
 class Node:
 	def __init__(self, depth):
 		#left child (aka no side,  aka 0 side)
@@ -17,7 +21,7 @@ class Node:
 
 	#searching through the nodes, used for prediction and accuracy
 	def search(self, x):
-		#base case is at a leaf node, there is no feature
+		#base case is at a leaf node, there is no feature question
 		if self.feat is None:
 			return self.label
 		elif x[self.feat] == 0:
@@ -25,6 +29,7 @@ class Node:
 		else:
 			return self.right.search(x)
 
+	#recursive function that splits the samples into left and right subsamples based on information gain
 	def split(self, X, Y, max_depth):
 		#assign node a label
 		zeros = 0
@@ -42,29 +47,20 @@ class Node:
 		if self.depth == max_depth:
 			return
 		feat = best_IG(X,Y)
-		#check base cases: at max depth, no samples, out of features, or no IG  (prob don't need to check no samples or features... IG will take care of it)
-		if self.depth == max_depth or len(X) == 0 or self.depth == len(X[0]) or feat is None:
+		#check base cases: at max depth or no IG
+		if self.depth == max_depth or feat is None:
 			return
 		self.feat = feat
-		#split X and Y into lefts and rights
-		#left_X = np.array([[]])
-		#left_Y = np.array([[]])
-		#right_X = np.array([[]])
-		#right_Y = np.array([[]])
 		left_X = []
 		left_Y = []
 		right_X = []
 		right_Y = []
+		#split the samples to left and right subsets
 		for i,x in enumerate(X):
 			if x[self.feat] == 0:
-				#HAVING TROUBLE WITH THE ARRAYS :(
-				#left_X = np.append(left_X,x)
-				#left_Y = np.append(left_Y,Y[i])
 				left_X += [x]
 				left_Y += [Y[i]]
 			else:
-				#right_X = np.append(right_X,x)
-				#right_Y = np.append(right_Y,Y[i])
 				right_X += [x]
 				right_Y += [Y[i]]
 		#make left and right nodes and recurse
@@ -77,6 +73,7 @@ class Node:
 		self.left.split(left_X, left_Y, max_depth)
 		self.right.split(right_X, right_Y, max_depth)
 
+	#method used for printing the decision tree
 	def toString(self):
 		print('Depth',self.depth)
 		if self.feat is None:
@@ -113,15 +110,7 @@ class DTree:
 					X[j][i] = 1
 		return X
 
-#function that takes training data as input. The labels and the features are binary, but the feature vectors can be of
-#any finite dimension. The training feature data (X) should be structured as a 2D numpy array, with each
-#row corresponding to a single sample. The training labels (Y) should be structured as a 2D numpy array,
-#with each row corresponding to a single label. X and Y should have the same number of rows, with each row
-#corresponding to a single sample and its label. max depth is an integer that indicates the maximum depth
-#for the resulting decision tree. DT train binary(X,Y,max depth) should return the decision tree trained
-#using information gain, limited by some given maximum depth. If max depth is set to -1 then learning only
-#stops when we run out of features of our information gain is 0. You may store a decision tree however you
-#would like, i.e. a list of lists, a class, a dictionary, etc.
+#function that takes feature sample data X, and sample label data Y, and a max_depth and returns a decision tree with that depth as a maximum
 def DT_train_binary(X,Y,max_depth):
 	dt = DTree()
 	dt.build(X, Y, max_depth)
@@ -137,8 +126,7 @@ def DT_test_binary(X,Y,DT):
 	accuracy = correct/len(X)
 	return accuracy
 
-#Generate decision trees based on information gain on the training data, and return the tree that gives the
-#best accuracy on the validation data.
+#Generates decision trees of every max_depth and then returns the one with the highest accuracy on the validation data
 def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
 	forrest = []
 	numFeats = len(X_train[0])
@@ -158,36 +146,39 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
 	#return best dt
 	return forrest[maxDT]
 
-#This function should take a single sample and a trained decision tree and return a single classification.
-#The output should be a scalar value. You will use this function with the three trees to generate three
-#predictions per sample and use a majority vote to make a final decision. Present your results and accuracy
-#on the test data presented below.
+#This function takes a single sample and a decision tree and returns the label the decision tree would classify the sample as
 def DT_make_prediction(x,DT):
 	return DT.predict(x)
 
-#These functions are defined similarly to those above except that the features are now real values. The labels
-#are still binary. Your decision tree will need to use questions with inequalities: >, ≥, <, ≤. THINK
-#ABOUT HOW THIS CAN BE DONE EFFICIENTLY.
+#Creates and returns a decision tree with real values for X by first preprocessing X into binary based on the means of each feature
 def DT_train_real(X,Y,max_depth):
 	means = findMeans(X)
 	dt = DTree()
 	dt.means = means
-	fixedX = dt.fixData(X)
+	X_copy = copy.copy(X)
+	fixedX = dt.fixData(X_copy)
 	dt.build(fixedX,Y,max_depth)
 	return dt
 
+#Tests the accuracy of a real dataset X and Y against the prediction made by the passed in decision tree
 def DT_test_real(X,Y,DT):
-	fixedX = DT.fixData(X)
+	X_copy = copy.copy(X)
+	fixedX = DT.fixData(X_copy)
 	return DT_test_binary(fixedX,Y,DT)
 
+#Creates real decision trees of all depths, then returns the one with the highest accuracy on the validation data
 def DT_train_real_best(X_train,Y_train,X_val,Y_val):
 	dt = DTree()
 	dt.means = findMeans(X_train)
-	fixedTrain = dt.fixData(X_train)
-	fixedVal = dt.fixData(X_val)
-	return DT_train_binary_best(fixedTrain,Y_train,fixedVal,Y_val)
+	X_copy = copy.copy(X_train)
+	X_val_copy = copy.copy(X_val)
+	fixedTrain = dt.fixData(X_copy)
+	fixedVal = dt.fixData(X_val_copy)
+	newdt = DT_train_binary_best(fixedTrain,Y_train,fixedVal,Y_val)
+	newdt.means = dt.means
+	return newdt
 
-#returns index of the feature that gives maxIG, None if all zeros
+#returns index of the feature that gives max information gain, None if all information gains are zero
 def best_IG(X,Y):
 	zeros = 0
 	ones = 0
