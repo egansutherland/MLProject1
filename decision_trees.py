@@ -21,12 +21,13 @@ class Node:
 		if self.feat is None:
 			return self.label
 		elif x[self.feat] == 0:
-			return left.trav(x)
+			return self.left.trav(x)
 		else:
-			return right.trav(x)
+			return self.right.trav(x)
 
 	def split(self, X, Y, max_depth):
 		#assign node a label
+		print('DEPTH',self.depth)
 		zeros = 0
 		ones = 0
 		for y in Y:
@@ -38,29 +39,44 @@ class Node:
 			self.label = 0
 		else:
 			self.label = 1
-		#check base cases: at max depth, no samples, out of features, or no IG  (prob don't need to check no samples or features... IG will take care of it)
-		if self.depth == max_depth or len(X) == 0 or self.depth == len(X[0]) or best_IG(X,Y) is None:
-			return
 		#pick feature to split on based on max IG
-		self.feat = best_IG(X,Y)
+		feat = best_IG(X,Y)
+		#check base cases: at max depth, no samples, out of features, or no IG  (prob don't need to check no samples or features... IG will take care of it)
+		if self.depth == max_depth or len(X) == 0 or self.depth == len(X[0]) or feat is None:
+			return
+		self.feat = feat
 		#split X and Y into lefts and rights
-		left_X = np.array([[]])
-		left_Y = np.array([[]])
-		right_X = np.array([[]])
-		right_Y = np.array([[]])
+		#left_X = np.array([[]])
+		#left_Y = np.array([[]])
+		#right_X = np.array([[]])
+		#right_Y = np.array([[]])
+		left_X = []
+		left_Y = []
+		right_X = []
+		right_Y = []
 		for i,x in enumerate(X):
 			if x[self.feat] == 0:
 				print('left') #DEBUGGING
 				#HAVING TROUBLE WITH THE ARRAYS :(
-				left_X = np.append(left_X,x)
-				left_Y = np.append(left_Y,Y[i])
+				#left_X = np.append(left_X,x)
+				#left_Y = np.append(left_Y,Y[i])
+				left_X += [x]
+				left_Y += [Y[i]]
 			else:
 				print('right') #DEBUGGING
-				right_X = np.append(right_X,x)
-				right_Y = np.append(right_Y,Y[i])
+				#right_X = np.append(right_X,x)
+				#right_Y = np.append(right_Y,Y[i])
+				right_X += [x]
+				right_Y += [Y[i]]
 		#make left and right nodes and recurse
-		print(left_Y) #DEBUGGING
-		print(left_X) #DEBUGGING
+		left_X = np.array(left_X)
+		left_Y = np.array(left_Y)
+		right_X = np.array(right_X)
+		right_Y = np.array(right_Y)
+		print('left_X',left_X)
+		print('left_Y',left_Y)
+		print('right_X',right_X)
+		print('right_Y',right_Y)
 		self.left = Node(self.depth + 1)
 		self.right = Node(self.depth + 1)
 		self.left.split(left_X, left_Y, max_depth)
@@ -83,7 +99,6 @@ class DTree:
 		return value
 	def build(self, X, Y, max_depth):
 		self.root.split(X, Y, max_depth)
-		return
 	def toString(self):
 		self.root.toString()
 
@@ -157,7 +172,7 @@ def best_IG(X,Y):
 	maxIG = 0
 	index = None
 	for feat_idx in range(0,len(X[0])):
-		print('INDEX',feat_idx)
+		print('FEATURE',feat_idx)
 		left_zeros = 0
 		left_ones = 0
 		right_zeros = 0
@@ -177,8 +192,8 @@ def best_IG(X,Y):
 		right_total = right_zeros + right_ones
 		if left_total == 0 or right_total == 0:
 			continue
-		print('RT',right_total)
 		print('LT',left_total)
+		print('RT',right_total)
 		H_left = 0
 		H_right = 0
 		if left_zeros == 0:
@@ -196,8 +211,9 @@ def best_IG(X,Y):
 		print('H(',feat_idx,'=0)=',H_left)
 		print('H(',feat_idx,'=1)=',H_right)
 		IG = H - (left_total/total)*H_left - (right_total/total)*H_right
-		print('IG',feat_idx,'=',IG)
+		print('IG_',feat_idx,'=',IG)
 		if IG > maxIG:
 			maxIG = IG
 			index = feat_idx
+	print('Splitting on feature:',index)
 	return index
