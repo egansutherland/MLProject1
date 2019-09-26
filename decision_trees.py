@@ -93,12 +93,16 @@ class DTree:
 	def __init__(self):
 		self.root = Node(0)
 		self.means = None
+	#used for prediciting a label on a sample
 	def predict(self, x):
 		return self.root.search(x)
+	#building the tree based on the passed in training data and max_depth
 	def build(self, X, Y, max_depth):
 		self.root.split(X, Y, max_depth)
+	#used for printing the decision tree
 	def toString(self):
 		self.root.toString()
+	#used for changing the real data to binary based on means
 	def fixData(self, X):
 		numSamples = len(X)
 		numFeats = len(X[0])
