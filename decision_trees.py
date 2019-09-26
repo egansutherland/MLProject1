@@ -27,7 +27,6 @@ class Node:
 
 	def split(self, X, Y, max_depth):
 		#assign node a label
-		print('DEPTH',self.depth)
 		zeros = 0
 		ones = 0
 		for y in Y:
@@ -73,15 +72,9 @@ class Node:
 		left_Y = np.array(left_Y)
 		right_X = np.array(right_X)
 		right_Y = np.array(right_Y)
-		print('left_X',left_X)
-		print('left_Y',left_Y)
-		print('right_X',right_X)
-		print('right_Y',right_Y)
 		self.left = Node(self.depth + 1)
 		self.right = Node(self.depth + 1)
-		print('LEFT')
 		self.left.split(left_X, left_Y, max_depth)
-		print('RIGHT')
 		self.right.split(right_X, right_Y, max_depth)
 
 	def toString(self):
@@ -154,7 +147,8 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
 	#build all depth dts
 	for i in range(0, numFeats):
 		temp = DTree()
-		forrest = forrest + [temp.build(X_train, Y_train, i)]
+		temp.build(X_train, Y_train, i)
+		forrest += [temp]
 	#use DT_test_binary to find accuracy of each dt on validation data
 	for i in range(0, numFeats):
 		tempAcc = DT_test_binary(X_val, Y_val, forrest[i])
@@ -179,7 +173,8 @@ def DT_train_real(X,Y,max_depth):
 	dt = DTree()
 	dt.means = means
 	fixedX = dt.fixData(X)
-	return dt.build(fixedX,Y,max_depth)
+	dt.build(fixedX,Y,max_depth)
+	return dt
 
 def DT_test_real(X,Y,DT):
 	fixedX = DT.fixData(X)
@@ -192,9 +187,8 @@ def DT_train_real_best(X_train,Y_train,X_val,Y_val):
 	fixedVal = dt.fixData(X_val)
 	return DT_train_binary_best(fixedTrain,Y_train,fixedVal,Y_val)
 
-#returns index of the max IG, none if all zeros NEED THIS IMPLEMENTED
+#returns index of the feature that gives maxIG, None if all zeros
 def best_IG(X,Y):
-	#return 0 #DEBUGGING
 	zeros = 0
 	ones = 0
 	for y in Y:
@@ -206,11 +200,9 @@ def best_IG(X,Y):
 	if zeros == 0 or ones == 0:
 		return None
 	H = -(zeros/total) * math.log((zeros/total),2) -(ones/total) * math.log((ones/total),2)
-	print('H()',H)
 	maxIG = 0
 	index = None
 	for feat_idx in range(0,len(X[0])):
-		print('FEATURE',feat_idx)
 		left_zeros = 0
 		left_ones = 0
 		right_zeros = 0
@@ -230,8 +222,6 @@ def best_IG(X,Y):
 		right_total = right_zeros + right_ones
 		if left_total == 0 or right_total == 0:
 			continue
-		print('LT',left_total)
-		print('RT',right_total)
 		H_left = 0
 		H_right = 0
 		if left_zeros == 0:
@@ -246,14 +236,10 @@ def best_IG(X,Y):
 			H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2)
 		else:
 			H_right = -(right_zeros/right_total) * math.log((right_zeros/right_total),2) -(right_ones/right_total) * math.log((right_ones/right_total),2)
-		print('H(',feat_idx,'=0)=',H_left)
-		print('H(',feat_idx,'=1)=',H_right)
 		IG = H - (left_total/total)*H_left - (right_total/total)*H_right
-		print('IG_',feat_idx,'=',IG)
 		if IG > maxIG:
 			maxIG = IG
 			index = feat_idx
-	print('Splitting on feature:',index)
 	return index
 
 #Function to calculate means for real valued data
