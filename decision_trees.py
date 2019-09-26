@@ -11,12 +11,13 @@ class Node:
 	def __init__(self, depth):
 		#left child (aka no side,  aka 0 side)
 		self.left = None
-		#right child (aka no side,  aka 1 side)
+		#right child (aka yes side,  aka 1 side)
 		self.right = None
 		#the question it asks (which is just an index)
 		self.feat = None
 		#the decision
 		self.label = None
+		#number representing the depth of the node (root starts at 0)
 		self.depth = depth
 
 	#searching through the nodes, used for prediction and accuracy

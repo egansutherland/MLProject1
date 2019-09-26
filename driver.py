@@ -36,7 +36,7 @@ RealY = np.array([[1], [1], [1], [1], [1], [1], [1], [1], [0], [0], [0], [0], [0
 print()
 print()
 print('WRITE UP 1')
-max_depth_1 = 2
+max_depth_1 = -1
 
 DT_train_1 = dt.DT_train_binary(trainingX1,trainingY1, max_depth_1)
 DT_train_1.toString()
@@ -94,7 +94,6 @@ for i,x in enumerate(DinnerTestX):
 	if guess == DinnerTestY[i][0]:
 		correct+=1
 print('ForrestACC',correct/len(DinnerTestX))
-print('Correct',correct)
 
 print()
 print()
