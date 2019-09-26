@@ -78,6 +78,7 @@ class Node:
 class DTree:
 	def __init__(self):
 		self.root = Node(0)
+		self.means = None
 	def predict(self, x):
 		value = self.root.trav(x)
 		return value
@@ -86,7 +87,16 @@ class DTree:
 		return
 	def toString(self):
 		self.root.toString()
-
+	def fixData(self, X):
+		numSamples = len(X)
+		numFeats = len(X[0])
+		for i in range(0, numFeats):
+			for j in range(0, numSamples):
+				if X[j][i] <= self.means[i]:
+					X[j][i] = 0
+				else:
+					X[j][i] = 1
+		return X
 
 #function that takes training data as input. The labels and the features are binary, but the feature vectors can be of
 #any finite dimension. The training feature data (X) should be structured as a 2D numpy array, with each
@@ -143,30 +153,22 @@ def DT_make_prediction(x,DT):
 #are still binary. Your decision tree will need to use questions with inequalities: >, ≥, <, ≤. THINK
 #ABOUT HOW THIS CAN BE DONE EFFICIENTLY.
 def DT_train_real(X,Y,max_depth):
-	#means = []
-	numFeats = len(X[0])
-	numSamples = len(X)
-	#find mean for each feature and assign binary values to smaples in X
-	for i in range(0, numFeats):
-		mean = 0
-		for j in range(0, numSamples):
-			mean = mean + X[j][i]
-		mean = mean / numSamples
-		#means = means + [mean]
-		#replace real values with binary values
-		for j in range(0, numSamples):
-			if X[j][i] < mean:
-				X[j][i] = 0
-			else:
-				X[j][i] = 1
-	return dt
+	means = findMeans(X)
+	dt = DTree()
+	dt.means = means
+	fixedX = dt.fixData(X)
+	return dt.build(fixedX,Y,max_depth)
 
 def DT_test_real(X,Y,DT):
-	accuracy = 0
-	return accuracy
+	fixedX = DT.fixData(X)
+	return DT_test_binary(fixedX,Y,DT)
 
 def DT_train_real_best(X_train,Y_train,X_val,Y_val):
-	return dt
+	dt = DTree()
+	dt.means = findMeans(X_train)
+	fixedTrain = dt.fixData(X_train)
+	fixedVal = dt.fixData(X_val)
+	return DT_train_binary_best(fixedTrain,Y_train,fixedVal,Y_val)
 
 #returns index of the max IG, none if all zeros NEED THIS IMPLEMENTED
 def best_IG(X,Y):
@@ -216,3 +218,16 @@ def best_IG(X,Y):
 	#		maxIG = IG
 	#		index = i
 	return index
+
+#Function to calculate means for real valued data
+def findMeans(X):
+	means = []
+	numSamples = len(X)
+	numFeats = len(X[0])
+	for i in range(0, numFeats):
+		mean = 0
+		for j in range(0, numSamples):
+			mean = mean + X[j][i]
+		mean = mean / numSamples
+		means = means + [mean]
+	return means
