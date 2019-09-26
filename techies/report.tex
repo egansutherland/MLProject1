@@ -176,15 +176,17 @@ xleftmargin= 1cm
 
 \section*{3. On Training Set 1 and Training Set 2}
 
-\noindent \textbf{Binary Results}
+\noindent \textbf{Training Set 1 Results}
 
-\indent 
+\indent Two trees were trained on Training Set 1. The first tree was trained using "DT\textunderscore train\textunderscore binary(X, Y, max\textunderscore depth)" and produced an accuracy value of 0.75 when run predicting on Test Set 1. The second tree was trained using "DT\textunderscore train\textunderscore train\textunderscore binary\textunderscore best(X\textunderscore train, Y\textunderscore train, X\textunderscore val, Y\textunderscore val)" and produced an accuracy value of 0.75 as well. This is when "max\textunderscore depth" is set to -1. The two training functions returned the same tree. This is due to the decision tree training algorithm being a greedy algorithm that picks the next split based on highest information gain. Changing "max\textunderscore depth" does however create differences in the tree produced by . For example, if "max\textunderscore depth" is set to 0 then "DT\textunderscore train\textunderscore binary(X, Y, max\textunderscore depth)" the accuracy drops to 0.25. Limiting the training algorithm produces worse results in this case.
 
-\noindent \textbf{Real-Valued Results}
+\noindent \textbf{DT\textunderscore binary\textunderscore  best(X, Y, max\textunderscore depth) Results}
+
+\indent The same two training functions were also run on Training Set 2. With "max\textunderscore depth" set to -1, "DT\textunderscore train\textunderscore binary(X, Y, max\textunderscore depth)" produces a model with an accuracy of 1.0. "DT\textunderscore train\textunderscore binary\textunderscore best(X, Y, max\textunderscore depth)" also produces a model with an accuracy value of 1. However, if the "max\textunderscore depth" is set to 1 produces a model with an accuracy value of 0.66 on the test data. This is another case where limiting the "max\textunderscore depth" reduces the accuracy of the model. If overfitting is a problem, limiting "max\textunderscore depth" is an option for improving results but limiting it too much leads to underfitting. 
 
 \section*{4. On Inviting Friends for Dinner}
 
-\noindent For this portion of the assignment, we were asked to predict whether or not friends should be invited over based on a series of binary data points. We were asked to create 3 decision trees based on 3 subsets of features in the provided training data then test each tree's accuracy against a set of test data. The trees and corresponding accuracy values are shown below.
+\noindent Three decision trees were trained based on three different subsets of samples regarding whether or not to invite friends for dinner. The first subset of samples consisted of samples 1 through 5, the second subset consisted of samples 3 through 7, and the last subset consisted of samples 4 through 8. The accuracy of the first tree when tested against the three test samples was 0.333. The same accuracy was yielded when testing the second subset. Testing the last subset of data yielded and accuracy of 0.666. The predictions for the first and second of those samples was a unanimous yes. When predicting the outcome of the third sample, however, the final tree predicted no, which is correct, but the vote on the prediction of the third sample was still yes.
 
 \begin{center}
     \includegraphics[scale=1]{First.png}
