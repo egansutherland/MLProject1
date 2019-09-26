@@ -140,7 +140,7 @@ def DT_test_binary(X,Y,DT):
 #Generate decision trees based on information gain on the training data, and return the tree that gives the
 #best accuracy on the validation data.
 def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
-	forrest = []
+	forest = []
 	numFeats = len(X_train[0])
 	maxDT = None
 	maxAccuracy = 0
@@ -148,15 +148,15 @@ def DT_train_binary_best(X_train, Y_train, X_val, Y_val):
 	for i in range(0, numFeats):
 		temp = DTree()
 		temp.build(X_train, Y_train, i)
-		forrest += [temp]
+		forest += [temp]
 	#use DT_test_binary to find accuracy of each dt on validation data
 	for i in range(0, numFeats):
-		tempAcc = DT_test_binary(X_val, Y_val, forrest[i])
+		tempAcc = DT_test_binary(X_val, Y_val, forest[i])
 		if tempAcc > maxAccuracy:
 			maxAccuracy = tempAcc
 			maxDT = i
 	#return best dt
-	return forrest[maxDT]
+	return forest[maxDT]
 
 #This function should take a single sample and a trained decision tree and return a single classification.
 #The output should be a scalar value. You will use this function with the three trees to generate three
