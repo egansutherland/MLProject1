@@ -1,24 +1,29 @@
 import numpy as np
 import decision_trees as dt
-#fileName = input("Data file name? ")
-#print(fileName)
-#if fileName != "":
-#file = open(fileName)
-#X = np.array(file.readline())
-#Y = np.array(file.readline())
-#file.close()
-#else:
-X = np.array([[0,1,0,1],[1,1,1,1],[0,0,0,1]])
-Y = np.array([[1],[1],[0]])
 
-X2 = np.array([[0,1],[0,0],[1,0],[0,0],[1,1]])
-Y2 = np.array([[1],[0],[0],[0],[1]])
+test_binX = np.array([[0,1,0,1],[1,1,1,1],[0,0,0,1]])
+test_binY = np.array([[1],[1],[0]])
 
+trainingX1 = np.array([[0,1],[0,0],[1,0],[0,0],[1,1]])
+trainingY1 = np.array([[1],[0],[0],[0],[1]])
 
-#print(X)
-#print(Y)
+testingX1 = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+testingY1 = np.array([[1], [1], [0], [1]])
+
+valX1 = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+valY1 = np.array([[0], [1], [0], [1]])
+
+trainingX2 = np.array([[0, 1, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 1], [1, 1, 0, 1], [1, 1, 0, 0], [1, 0, 0, 1], [0, 1, 0, 1], [0, 1, 0, 0]])
+trainingY2 = np.array([[0], [1], [0], [0], [1], [0], [1], [1], [1]])
+
+testingX2 = np.array([[0, 1, 0, 0], [0, 0, 0, 1], [1, 0, 0, 0], [0, 0, 1, 1], [1, 1, 0, 1], [1, 1, 0, 0], [1, 0, 0, 1], [0, 1, 0, 1], [0, 1, 0, 0]])
+testingY2 = np.array([[1], [1], [0], [0], [1], [0], [1], [1], [1]])
+
+valX2 = np.array([[1, 0, 0, 0], [0, 0, 1, 1], [1, 1, 0, 1], [1, 1, 0, 0], [1, 0, 0, 1], [0, 1, 0, 0]])
+valY2 = np.array([[0], [0], [1], [0], [1], [1]])
+
 max_depth = 2
-DT = dt.DT_train_binary(X,Y, max_depth)
-#DT.toString()
-#test_acc = dt.DT_test_binary(X,Y,DT)
-#print(test_acc) #DEBUGGING
+DT = dt.DT_train_binary(trainingX2,trainingY2, max_depth)
+
+test_acc = dt.DT_test_binary(testingX2,testingY2,DT)
+print(test_acc)
